@@ -1,0 +1,44 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request: # This will run the build command on every pull request to test if the site is broken.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Set domain
+        run: echo "DOMAIN=www.daiyi.co" >> $GITHUB_ENV # TODO set your custom domain
+        # If you're using the default github pages url, use this instead:
+        # run: echo "DOMAIN=${{ github.actor }}.github.io" >> $GITHUB_ENV
+
+      - name: Set base URL
+        run: echo "BASE_URL=https://${{ env.DOMAIN }}/${{ github.event.repository.name }}/" >> $GITHUB_ENV
+
+      - name: Checkout website repo
+        uses: actions/checkout@v2
+        with:
+          submodules: true # fetch the theme
+          # you need to set this as an environment env if your repo or any submodules (e.g the theme) is private:
+          # token: ${{ secrets.PRIVATE_REPO_TOKEN }}
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: "0.88.1" # TODO set this to your hugo version
+
+      - name: Build website
+        run: hugo --baseURL "${{ env.BASE_URL }}"
+        env:
+          HUGO_ENV: production
+
+      - name: Deploy main
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main' # only publish if this is the main branch
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          cname: ${{ env.DOMAIN }} # TODO you need to set this if you're using a custom domain. Otherwise you can remove it.
