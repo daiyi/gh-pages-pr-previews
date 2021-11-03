@@ -3,8 +3,7 @@ name: github pages
 on:
   push:
     branches:
-      - main
-  pull_request: # This will run the build command on every pull request to test if the site is broken.
+      - main # deploy main. If your branch is `master`, you'll have to replace that throughout this file.
 
 jobs:
   deploy:
@@ -14,9 +13,6 @@ jobs:
         run: echo "DOMAIN=www.daiyi.co" >> $GITHUB_ENV # TODO set your custom domain
         # If you're using the default github pages url, use this instead:
         # run: echo "DOMAIN=${{ github.actor }}.github.io" >> $GITHUB_ENV
-
-      - name: Set base URL
-        run: echo "BASE_URL=https://${{ env.DOMAIN }}/${{ github.event.repository.name }}/" >> $GITHUB_ENV
 
       - name: Checkout website repo
         uses: actions/checkout@v2
@@ -30,14 +26,16 @@ jobs:
         with:
           hugo-version: "0.88.1" # TODO set this to your hugo version
 
+      - name: Set production base URL
+        run: echo "BASE_URL=https://${{ env.DOMAIN }}/${{ github.event.repository.name }}/" >> $GITHUB_ENV
+
       - name: Build website
         run: hugo --baseURL "${{ env.BASE_URL }}"
         env:
           HUGO_ENV: production
 
-      - name: Deploy main
+      - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main' # only publish if this is the main branch
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
