@@ -1,4 +1,4 @@
-baseURL = 'http://example.org/'
+baseURL = 'http://example.org/' # You aren't really using this since the base url is overriden in the github action
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = 'PR previews for Github Pages demo'
 theme = "etch"
