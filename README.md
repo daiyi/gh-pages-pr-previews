@@ -1,5 +1,4 @@
 # How to automate static site previews for Github Pages: a demo
-
 Writeup here: https://daiyi.co/blog/pr-previews-for-github-pages/
 
 A feature of modern hosting platforms (e.g. Vercel) that I miss with gh-pages is getting automatic site previews on each PR. Here is my attempt at a hack. 
